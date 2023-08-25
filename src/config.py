@@ -7,12 +7,12 @@ class Settings(BaseSettings):
     # for api
     API_HOST: str = Field(default='0.0.0.0', env='API_HOST')
     # api auth settings
-    AUTH_SECRET_KEY: str = Field(..., env="AUTH_SECRET_KEY")
-    ALGORITHM: str = Field(default='HS256', env="ALGORITHM")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES")
+    AUTH_SECRET_KEY: str = Field(..., env='AUTH_SECRET_KEY')
+    ALGORITHM: str = Field(default='HS256', env='ALGORITHM')
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30, env='ACCESS_TOKEN_EXPIRE_MINUTES')
 
     class Config:
-        env_prefix = ""
+        env_prefix = ''
         case_sentive = False
         env_file = '.env'
         env_file_encoding = 'utf-8'

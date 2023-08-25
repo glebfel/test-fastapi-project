@@ -6,7 +6,7 @@ from src.users.models import User
 def get_user_by_email(email: str) -> User:
     with get_db() as session:
         if not (user := session.query(User).filter_by(email=email).first()):
-            raise DatabaseElementNotFoundError("User with email '{}' not found".format(email))
+            raise DatabaseElementNotFoundError(f"User with email '{email}' not found")
         return user
 
 
@@ -15,13 +15,11 @@ def get_all_users() -> list[User]:
         return session.query(User).all()
 
 
-def add_new_user(first_name: str, last_name,
-                 email: str, username: str,
-                 hashed_password: str) -> User:
+def add_new_user(first_name: str, last_name, email: str, username: str, hashed_password: str) -> User:
     with get_db() as session:
-        user = User(first_name=first_name, last_name=last_name,
-                    username=username, email=email,
-                    hashed_password=hashed_password)
+        user = User(
+            first_name=first_name, last_name=last_name, username=username, email=email, hashed_password=hashed_password
+        )
         session.add(user)
         session.commit()
         session.refresh(user)
