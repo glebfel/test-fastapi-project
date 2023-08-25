@@ -29,6 +29,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInfo:
             detail='Could not validate credentials',
             headers={'WWW-Authenticate': 'Bearer'},
         )
+    # check if user with given email in db
     try:
         user = get_user_by_email(email)
     except DatabaseElementNotFoundError as ex:
