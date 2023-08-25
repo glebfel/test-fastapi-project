@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 from src.users.models import User
 
@@ -15,7 +15,7 @@ class UpdateUserInfo(BaseModel):
 
 class UserInfo(UpdateUserInfo):
     user_id: int
-    email: str
+    email: EmailStr
     registered_at: datetime
 
     @classmethod
