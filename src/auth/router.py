@@ -2,43 +2,17 @@ from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-import jwt
-from passlib.context import CryptContext
 import sqlalchemy
 
-from auth.exceptions import UserIncorrectPasswordError
+from src.auth.exceptions import UserIncorrectPasswordError
 from src.auth.schemas import Token, UserRegister
+from src.auth.utils import authenticate_user, create_access_token, get_password_hash
 from src.config import settings
 from src.exceptions import DatabaseElementNotFoundError
-from src.users.crud import add_new_user, get_user_by_email
-from src.users.models import User
+from src.users.crud import add_new_user
 
-
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 auth_router = APIRouter(tags=['Authentication'], prefix='/auth')
-
-
-def verify_password(plain_password, hashed_password) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password) -> str:
-    return pwd_context.hash(password)
-
-
-def create_access_token(data: dict, expires_delta: timedelta) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
-    to_encode.update({'exp': expire})
-    return jwt.encode(to_encode, settings.AUTH_SECRET_KEY, algorithm='HS256')
-
-
-def authenticate_user(email: str, password: str) -> User | None:
-    user = get_user_by_email(email)
-    if not verify_password(password, user.hashed_password):
-        raise UserIncorrectPasswordError(msg='Incorrect password')
-    return user
 
 
 @auth_router.post('/register')
