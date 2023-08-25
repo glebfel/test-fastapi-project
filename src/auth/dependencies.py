@@ -1,9 +1,11 @@
+import datetime
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 
 from src.config import settings
-from src.database import convert_sqlalchemy_row_to_dict
+from src.exceptions import DatabaseElementNotFoundError
 from src.users.crud import get_user_by_email
 from src.users.schemas import UserInfo
 
@@ -27,5 +29,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInfo:
             detail='Could not validate credentials',
             headers={'WWW-Authenticate': 'Bearer'},
         )
-    user = get_user_by_email(email)
-    return UserInfo(**convert_sqlalchemy_row_to_dict(user))
+    try:
+        user = get_user_by_email(email)
+    except DatabaseElementNotFoundError as ex:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ex.msg)
+    # check expiration date of the token
+    if payload.get('exp') and payload.get('exp') < datetime.datetime.now():
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token expired')
+    return UserInfo.marshal(user)
