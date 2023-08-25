@@ -5,6 +5,7 @@ import uvicorn as uvicorn
 from auth.router import auth_router
 from config import settings
 from src.database import Base, engine
+from src.users.router import user_router
 
 
 # init database
@@ -13,6 +14,7 @@ Base.metadata.create_all(bind=engine)
 # init fastapi app
 app = FastAPI(title='Test API', version='0.0.1')
 app.include_router(auth_router)
+app.include_router(user_router)
 
 # enable CORS
 app.add_middleware(
