@@ -20,19 +20,19 @@ async def get_user_info_by_id(user_id: int, db: AsyncSession = Depends(get_sessi
     return await get_user_by_id(db, user_id)
 
 
+@user_router.get('/search/{first_name}')
+@common_error_handler_decorator
+async def get_users_info_by_firstname(first_name: str, db: AsyncSession = Depends(get_session)) -> list[UserInfo]:
+    """Get user info by firstname
+    (can be more than one user because firstname is not unique field)"""
+    return await get_users_by_firstname(db, first_name)
+
+
 @user_router.get('/all')
 @common_error_handler_decorator
 async def get_all_users_info(db: AsyncSession = Depends(get_session)) -> list[UserInfo]:
     """Get all users info"""
     return await get_all_users(db)
-
-
-@user_router.get('/info/{firstname}')
-@common_error_handler_decorator
-async def get_users_info_by_firstname(firstname: str, db: AsyncSession = Depends(get_session)) -> list[UserInfo]:
-    """Get user info by firstname
-    (can be more than one user because firstname is not unique field)"""
-    return await get_users_by_firstname(db, firstname)
 
 
 @user_router.put('/update/{user_id}')
