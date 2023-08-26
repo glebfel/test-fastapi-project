@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import delete, select, update
 
 from src.database import async_session
 from src.exceptions import DatabaseElementNotFoundError
@@ -45,11 +45,11 @@ async def add_new_user(first_name: str, last_name, email: str, username: str, ha
 
 async def update_user_by_id(user_id: int, **kwargs):
     async with async_session() as session:
-        await session.execute(select(User).filter_by(user_id=user_id).update(kwargs))
+        await session.execute(update(User).filter_by(user_id=user_id).values(**kwargs))
         await session.commit()
 
 
 async def delete_user_by_id(user_id: int):
     async with async_session() as session:
-        await session.execute(select(User).filter_by(user_id=user_id).delete())
+        await session.execute(delete(User).filter_by(user_id=user_id))
         await session.commit()
