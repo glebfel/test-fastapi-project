@@ -1,0 +1,6 @@
+.env.example
+.gitignore
+.pre-commit-config.yaml
+setup.cfg
+/tests
+/venv
