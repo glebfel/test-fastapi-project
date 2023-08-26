@@ -25,18 +25,20 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
                 detail='Could not validate credentials',
                 headers={'WWW-Authenticate': 'Bearer'},
             )
+        # check expiration date of the token
+        if payload.get('exp') and datetime.datetime.fromtimestamp(payload.get('exp')) < datetime.datetime.now():
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='Token expired',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+        # check if user with given email in db
+        return await get_user_by_email(db, email)
+    except DatabaseElementNotFoundError as ex:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ex.msg)
     except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Could not validate credentials',
             headers={'WWW-Authenticate': 'Bearer'},
         )
-    # check if user with given email in db
-    try:
-        user = await get_user_by_email(db, email)
-    except DatabaseElementNotFoundError as ex:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ex.msg)
-    # check expiration date of the token
-    if payload.get('exp') and datetime.datetime.fromtimestamp(payload.get('exp')) < datetime.datetime.now():
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token expired')
-    return UserInfo.marshal(user)

@@ -23,9 +23,7 @@ async def get_users_by_firstname(db: AsyncSession, firstname: str) -> list[User]
     return user
 
 
-async def get_all_users(
-    db: AsyncSession,
-) -> list[User]:
+async def get_all_users(db: AsyncSession) -> list[User]:
     return (await db.execute(select(User))).scalars().all()
 
 
