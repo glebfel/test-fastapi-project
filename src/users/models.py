@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP
+from sqlalchemy.orm import validates
 from sqlalchemy.sql import func
 
 from src.database import Base
@@ -14,3 +15,8 @@ class User(Base):
     username = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     registered_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+
+    # to enable case-insensitive search for the 'first_name' field
+    @validates('first_name')
+    def convert_capitalized(self, key, value):
+        return value.capitalize()

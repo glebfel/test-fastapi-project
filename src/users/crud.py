@@ -17,9 +17,9 @@ async def get_user_by_id(db: AsyncSession, user_id: int) -> User:
     return user
 
 
-async def get_users_by_firstname(db: AsyncSession, firstname: str) -> list[User]:
-    if not (user := (await db.execute(select(User).filter_by(firstname=firstname))).scalars().all()):
-        raise DatabaseElementNotFoundError(f"Users with firstname '{firstname}' not found")
+async def get_users_by_firstname(db: AsyncSession, first_name: str) -> list[User]:
+    if not (user := (await db.execute(select(User).filter_by(first_name=first_name.capitalize()))).scalars().all()):
+        raise DatabaseElementNotFoundError(f"Users with firstname '{first_name}' not found")
     return user
 
 
