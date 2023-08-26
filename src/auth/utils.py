@@ -27,8 +27,8 @@ def create_access_token(data: dict, expires_delta: timedelta) -> str:
     return jwt.encode(to_encode, settings.AUTH_SECRET_KEY, algorithm='HS256')
 
 
-def authenticate_user(email: str, password: str) -> User | None:
-    user = get_user_by_email(email)
+async def authenticate_user(email: str, password: str) -> User | None:
+    user = await get_user_by_email(email)
     if not verify_password(password, user.hashed_password):
         raise UserIncorrectPasswordError(msg='Incorrect password')
     return user

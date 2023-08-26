@@ -8,18 +8,18 @@ from src.auth.exceptions import UserIncorrectPasswordError
 from src.auth.schemas import Token, UserRegister
 from src.auth.utils import authenticate_user, create_access_token, get_password_hash
 from src.config import settings
-from src.exceptions import DatabaseElementNotFoundError
 from src.users.crud import add_new_user
+from src.utils import common_error_handler_decorator
 
 
 auth_router = APIRouter(tags=['Authentication'], prefix='/auth')
 
 
 @auth_router.post('/register')
-def register_user(user: UserRegister) -> Token:
+async def register_user(user: UserRegister) -> Token:
     # check if user already in db
     try:
-        add_new_user(
+        await add_new_user(
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
@@ -38,11 +38,10 @@ def register_user(user: UserRegister) -> Token:
 
 
 @auth_router.post('/login')
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Token:
+@common_error_handler_decorator
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Token:
     try:
-        user = authenticate_user(form_data.username, form_data.password)
-    except DatabaseElementNotFoundError as ex:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=ex.msg)
+        user = await authenticate_user(form_data.username, form_data.password)
     except UserIncorrectPasswordError as ex:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=ex.msg)
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
