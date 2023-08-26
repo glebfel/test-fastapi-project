@@ -4,8 +4,6 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # for api
-    API_HOST: str = Field(default='0.0.0.0', env='API_HOST')
     # api auth settings
     AUTH_SECRET_KEY: str = Field(..., env='AUTH_SECRET_KEY')
     ALGORITHM: str = Field(default='HS256', env='ALGORITHM')
