@@ -5,8 +5,8 @@ from fastapi.security import OAuth2PasswordBearer
 import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import get_session
 from src.config import settings
+from src.database import get_session
 from src.exceptions import DatabaseElementNotFoundError
 from src.users.crud import get_user_by_email
 from src.users.schemas import UserInfo

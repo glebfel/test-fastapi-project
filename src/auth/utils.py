@@ -4,7 +4,7 @@ import jwt
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.exceptions import UserIncorrectPasswordError
+from src.auth.exceptions import UserIncorrectPasswordError
 from src.config import settings
 from src.users.crud import get_user_by_email
 from src.users.models import User
