@@ -1,7 +1,5 @@
 import asyncio
 
-from fastapi.testclient import TestClient
-import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -68,8 +66,3 @@ async def init_models():
 
 
 asyncio.run(init_models())
-
-
-@pytest.fixture
-def client():
-    return TestClient(app)

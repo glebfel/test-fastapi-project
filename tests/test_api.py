@@ -1,4 +1,13 @@
+import pytest
+from starlette.testclient import TestClient
+
+from src.main import app
 from tests.conftest import get_test_user_data
+
+
+@pytest.fixture
+def client():
+    return TestClient(app)
 
 
 def test_get_user_info_by_id(client):
