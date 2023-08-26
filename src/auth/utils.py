@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import jwt
 from passlib.context import CryptContext
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.exceptions import UserIncorrectPasswordError
 from src.config import settings
@@ -27,8 +28,8 @@ def create_access_token(data: dict, expires_delta: timedelta) -> str:
     return jwt.encode(to_encode, settings.AUTH_SECRET_KEY, algorithm='HS256')
 
 
-async def authenticate_user(email: str, password: str) -> User | None:
-    user = await get_user_by_email(email)
+async def authenticate_user(db: AsyncSession, email: str, password: str) -> User | None:
+    user = await get_user_by_email(db, email)
     if not verify_password(password, user.hashed_password):
         raise UserIncorrectPasswordError(msg='Incorrect password')
     return user
