@@ -10,5 +10,4 @@ COPY . /app
 WORKDIR /app
 
 # run api
-EXPOSE 8001
 CMD ["/bin/sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port 8001"]

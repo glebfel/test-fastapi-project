@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    image: test-api
+    env_file:
+      - .env
+    ports:
+      - ${API_PORT}:8001
