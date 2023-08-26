@@ -1,4 +1,4 @@
-from exceptions import BaseAPIException
+from src.exceptions import BaseAPIException
 
 
 class UserIncorrectPasswordError(BaseAPIException):
