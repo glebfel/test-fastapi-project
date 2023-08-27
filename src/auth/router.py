@@ -19,6 +19,7 @@ auth_router = APIRouter(tags=['Authentication'], prefix='/auth')
 
 @auth_router.post('/register')
 async def register_user(user: UserRegister, db: AsyncSession = Depends(get_session)) -> Token:
+    """Register new user"""
     # check if user already in db
     try:
         await add_new_user(
@@ -45,6 +46,7 @@ async def register_user(user: UserRegister, db: AsyncSession = Depends(get_sessi
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_session)
 ) -> Token:
+    """Authorize registered user"""
     try:
         user = await authenticate_user(db, form_data.username, form_data.password)
     except UserIncorrectPasswordError as ex:
