@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -34,7 +34,7 @@ async def get_users_info_by_firstname(first_name: str, db: AsyncSession = Depend
 async def get_all_users_info(
     order_by: OrderBy = OrderBy.user_id,
     is_desc_sort: bool = False,
-    filters: str = None,
+    filters: str = Query(None, description='format: attr1=value1,attr2=value2,...'),
     db: AsyncSession = Depends(get_session),
 ) -> list[UserInfo]:
     """Get all users info"""
