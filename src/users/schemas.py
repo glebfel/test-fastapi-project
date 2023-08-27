@@ -1,8 +1,18 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import StrEnum
 
 from pydantic import BaseModel, EmailStr, Field
+
+
+class OrderBy(StrEnum):
+    user_id = 'user_id'
+    email = 'email'
+    first_name = 'first_name'
+    last_name = 'last_name'
+    username = 'username'
+    registered_at = 'registered_at'
 
 
 class UpdateUserInfo(BaseModel):

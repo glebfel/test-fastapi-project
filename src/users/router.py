@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from src.auth.dependencies import get_current_user
 from src.database import get_session
 from src.users.crud import delete_user_by_id as delete_user_by_id_db
 from src.users.crud import get_all_users, get_user_by_id, get_users_by_firstname, update_user_by_id
-from src.users.schemas import UpdateUserInfo, UserInfo
+from src.users.schemas import OrderBy, UpdateUserInfo, UserInfo
 from src.users.utils import check_user_exists_decorator
 from src.utils import common_error_handler_decorator
 
@@ -30,9 +31,31 @@ async def get_users_info_by_firstname(first_name: str, db: AsyncSession = Depend
 
 @user_router.get('/all')
 @common_error_handler_decorator
-async def get_all_users_info(db: AsyncSession = Depends(get_session)) -> list[UserInfo]:
+async def get_all_users_info(
+    order_by: OrderBy = OrderBy.user_id,
+    is_desc_sort: bool = False,
+    filters: str = None,
+    db: AsyncSession = Depends(get_session),
+) -> list[UserInfo]:
     """Get all users info"""
-    return await get_all_users(db)
+    try:
+        filters_criteria = {}
+        # filter
+        if filters is not None:
+            filters_criteria = dict(x.strip().split('=') for x in filters.split(','))
+            # check if all keys are in user model attrs
+            for attr in filters_criteria.keys():
+                if attr not in UserInfo.model_fields.keys():
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Invalid filter input: attribute '{attr}' doesn't exist in UserInfo model",
+                    )
+        return await get_all_users(filters_criteria, order_by, is_desc_sort, db)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Invalid filter input: valid format - attr1=value1,attr2=value2,...',
+        )
 
 
 @user_router.put('/update/{user_id}')

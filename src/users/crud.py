@@ -1,4 +1,4 @@
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, desc, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exceptions import DatabaseElementNotFoundError
@@ -23,8 +23,9 @@ async def get_users_by_firstname(db: AsyncSession, first_name: str) -> list[User
     return user
 
 
-async def get_all_users(db: AsyncSession) -> list[User]:
-    return (await db.execute(select(User))).scalars().all()
+async def get_all_users(filters: dict, order_by: str, is_desc_sort: bool, db: AsyncSession) -> list[User]:
+    order_by = desc(order_by) if is_desc_sort else order_by
+    return (await db.execute(select(User).order_by(order_by).filter_by(**filters))).scalars().all()
 
 
 async def add_new_user(
