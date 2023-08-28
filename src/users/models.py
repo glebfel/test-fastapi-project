@@ -17,6 +17,6 @@ class User(Base):
     registered_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
     # to enable case-insensitive search for the 'first_name' field
-    @validates('first_name')
+    @validates('first_name', 'last_name')
     def convert_capitalized(self, key, value):
         return value.capitalize()
