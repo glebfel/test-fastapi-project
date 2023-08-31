@@ -16,15 +16,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/login', scheme_name='JWT')
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_session)) -> UserInfo:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail='Could not validate credentials',
+        headers={'WWW-Authenticate': 'Bearer'},
+    )
     try:
         payload = jwt.decode(token, settings.AUTH_SECRET_KEY, algorithms=[settings.ALGORITHM])
         email: str = payload.get('email')
         if email is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail='Could not validate credentials',
-                headers={'WWW-Authenticate': 'Bearer'},
-            )
+            raise credentials_exception
         # check expiration date of the token
         if payload.get('exp') and datetime.datetime.fromtimestamp(payload.get('exp')) < datetime.datetime.now():
             raise HTTPException(
@@ -34,11 +35,5 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
             )
         # check if user with given email in db
         return await get_user_by_email(db, email)
-    except DatabaseElementNotFoundError as ex:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ex.msg)
-    except jwt.PyJWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Could not validate credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
+    except (jwt.PyJWTError, DatabaseElementNotFoundError):
+        raise credentials_exception
