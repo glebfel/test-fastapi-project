@@ -25,7 +25,7 @@ def create_access_token(data: dict, expires_delta: timedelta) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode.update({'exp': expire})
-    return jwt.encode(to_encode, settings.AUTH_SECRET_KEY, algorithm='HS256')
+    return jwt.encode(to_encode, settings.AUTH_SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 async def authenticate_user(db: AsyncSession, email: str, password: str) -> User | None:
