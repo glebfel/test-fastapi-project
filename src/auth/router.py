@@ -1,13 +1,11 @@
 from datetime import datetime, timedelta
-from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status
 import sqlalchemy
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.exceptions import UserIncorrectPasswordError
-from src.auth.schemas import Token, UserRegister
+from src.auth.schemas import CustomOAuth2PasswordRequestForm, Token, UserRegister
 from src.auth.utils import authenticate_user, create_access_token, get_password_hash
 from src.config import settings
 from src.database import get_session
@@ -16,15 +14,6 @@ from src.utils import common_error_handler_decorator
 
 
 auth_router = APIRouter(tags=['Authentication'], prefix='/auth')
-
-
-class CustomOAuth2PasswordRequestForm(OAuth2PasswordRequestForm):
-    def __init__(
-        self,
-        email: Annotated[str, Form()],
-        password: Annotated[str, Form()],
-    ):
-        super().__init__(username=email, password=password)
 
 
 @auth_router.post('/register')
