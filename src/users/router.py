@@ -50,7 +50,7 @@ async def get_all_users_info(
                         status_code=status.HTTP_400_BAD_REQUEST,
                         detail=f"Invalid filter input: attribute '{attr}' doesn't exist in UserInfo model",
                     )
-        return await get_all_users(filters_criteria, order_by, is_desc_sort, db)
+        return await get_all_users(db, filters_criteria, order_by, is_desc_sort)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

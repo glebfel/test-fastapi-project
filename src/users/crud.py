@@ -23,7 +23,7 @@ async def get_users_by_firstname(db: AsyncSession, first_name: str) -> list[User
     return user
 
 
-async def get_all_users(filters: dict, order_by: str, is_desc_sort: bool, db: AsyncSession) -> list[User]:
+async def get_all_users(db: AsyncSession, filters: dict, order_by: str, is_desc_sort: bool) -> list[User]:
     order_by = desc(order_by) if is_desc_sort else order_by
     return (await db.execute(select(User).order_by(order_by).filter_by(**filters))).scalars().all()
 
