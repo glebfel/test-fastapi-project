@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 import sqlalchemy
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +16,15 @@ from src.utils import common_error_handler_decorator
 
 
 auth_router = APIRouter(tags=['Authentication'], prefix='/auth')
+
+
+class CustomOAuth2PasswordRequestForm(OAuth2PasswordRequestForm):
+    def __init__(
+        self,
+        email: Annotated[str, Form()],
+        password: Annotated[str, Form()],
+    ):
+        super().__init__(username=email, password=password)
 
 
 @auth_router.post('/register')
@@ -44,7 +54,7 @@ async def register_user(user: UserRegister, db: AsyncSession = Depends(get_sessi
 @auth_router.post('/login')
 @common_error_handler_decorator
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_session)
+    form_data: CustomOAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_session)
 ) -> Token:
     """Authorize registered user"""
     try:
